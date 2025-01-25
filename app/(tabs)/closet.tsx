@@ -61,6 +61,7 @@ export default function ClosetScreen() {
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
         renderTabBar={renderTabBar}
+        style={styles.tabView}
       />
     </ThemedView>
   );
@@ -81,8 +82,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0,
   },
   tabLabel: {
-    textTransform: "none",
+    fontSize: 14,
     fontWeight: "600",
+    textTransform: "none",
+  },
+  tabView: {
+    flex: 1,
   },
   tabContent: {
     flex: 1,
