@@ -1,110 +1,9 @@
-// import { useCallback, useState } from "react";
-// import { StyleSheet, useWindowDimensions } from "react-native";
-// import { SceneMap, TabBar, TabView } from "react-native-tab-view";
-
-// import { ThemedText } from "@/components/ThemedText";
-// import { ThemedView } from "@/components/ThemedView";
-// import { Colors } from "@/constants/Colors";
-// import { useColorScheme } from "@/hooks/useColorScheme";
-
-// const ClothesRoute = () => (
-//   <ThemedView style={styles.tabContent}>
-//     <ThemedText>Your clothes will appear here</ThemedText>
-//   </ThemedView>
-// );
-
-// const OutfitsRoute = () => (
-//   <ThemedView style={styles.tabContent}>
-//     <ThemedText>Your outfits will appear here</ThemedText>
-//   </ThemedView>
-// );
-
-// const renderScene = SceneMap({
-//   clothes: ClothesRoute,
-//   outfits: OutfitsRoute,
-// });
-
-// export default function ClosetScreen() {
-//   const layout = useWindowDimensions();
-//   const colorScheme = useColorScheme();
-//   const [index, setIndex] = useState(0);
-//   const [routes] = useState([
-//     { key: "clothes", title: "Clothes" },
-//     { key: "outfits", title: "Outfits" },
-//   ]);
-
-//   const renderTabBar = useCallback(
-//     (props: any) => (
-//       <TabBar
-//         {...props}
-//         style={styles.tabBar}
-//         indicatorStyle={{
-//           backgroundColor: Colors[colorScheme ?? "light"].tint,
-//         }}
-//         activeColor={Colors[colorScheme ?? "light"].tint}
-//         inactiveColor={Colors[colorScheme ?? "light"].tabIconDefault}
-//         labelStyle={styles.tabLabel}
-//       />
-//     ),
-//     [colorScheme]
-//   );
-
-//   return (
-//     <ThemedView style={styles.container}>
-//       <ThemedText type="title" style={styles.title}>
-//         My Closet
-//       </ThemedText>
-
-//       <TabView
-//         navigationState={{ index, routes }}
-//         renderScene={renderScene}
-//         onIndexChange={setIndex}
-//         initialLayout={{ width: layout.width }}
-//         renderTabBar={renderTabBar}
-//         style={styles.tabView}
-//       />
-//     </ThemedView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//   },
-//   title: {
-//     marginBottom: 24,
-//     marginTop: 60,
-//   },
-//   tabBar: {
-//     backgroundColor: "transparent",
-//     elevation: 0,
-//     shadowOpacity: 0,
-//   },
-//   tabLabel: {
-//     fontSize: 14,
-//     fontWeight: "600",
-//     textTransform: "none",
-//   },
-//   tabView: {
-//     flex: 1,
-//   },
-//   tabContent: {
-//     flex: 1,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-// });
-
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons
 import { useRouter } from 'expo-router';
 import BigCard from '../../components/BigCard';
 import SmallCard from '../../components/SmallCard'; // Import SmallCard
-import { getAuth } from 'firebase/auth'; // Import Firebase Auth
-import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore'; // Import Firestore
 
 type Plan = {
   id: string;
@@ -115,39 +14,12 @@ type Plan = {
 };
 
 export default function HomeScreen() {
-  const [firstName, setFirstName] = useState('');
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const auth = getAuth();
-  const db = getFirestore();
-
-  useEffect(() => {
-    const fetchUserName = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setFirstName(docSnap.data().firstName);
-        } else {
-          console.log('No such document!');
-        }
-      }
-    };
-
-    const fetchPlans = async () => {
-      const plansRef = collection(db, 'plans');
-      const q = query(plansRef, where('tag', '==', 'For You'));
-      const querySnapshot = await getDocs(q);
-      const fetchedPlans: Plan[] = [];
-      querySnapshot.forEach((doc) => {
-        fetchedPlans.push({ id: doc.id, ...doc.data() } as Plan);
-      });
-      setPlans(fetchedPlans);
-    };
-
-    fetchUserName();
-    fetchPlans();
-  }, [auth, db]);
+  const [firstName, setFirstName] = useState('User');
+  const placeholderPlans: Plan[] = [
+    { id: '1', title: 'Plan 1', caption: 'Caption 1', details: 'Details 1', days: 7 },
+    { id: '2', title: 'Plan 2', caption: 'Caption 2', details: 'Details 2', days: 14 },
+    { id: '3', title: 'Plan 3', caption: 'Caption 3', details: 'Details 3', days: 21 },
+  ];
 
   const router = useRouter();
 
@@ -163,14 +35,14 @@ export default function HomeScreen() {
       <ScrollView style={styles.verticalScrollContainer}>
         <View style={styles.extra}>
           <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Hi, {firstName}</Text>
+            <Text style={styles.headerText}>{firstName}'s Closet</Text>
             <View style={{ flex: 1 }} />
             <View style={styles.iconContainer}>
               <MaterialIcons name="person" size={20} color="#333333" />
             </View>
           </View>
         </View>
-        <Text style={styles.firstSubHeaderText}>For You</Text>
+        <Text style={styles.firstSubHeaderText}>Outfits</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -178,13 +50,13 @@ export default function HomeScreen() {
           snapToInterval={300} 
           decelerationRate="fast"
         >
-          {plans.map((plan, index) => (
+          {placeholderPlans.map((plan, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
               <BigCard title={plan.title} caption={plan.caption} details={plan.details} />
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Text style={styles.subHeaderText}>More for You</Text>
+        <Text style={styles.subHeaderText}>Pants</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -192,13 +64,13 @@ export default function HomeScreen() {
           snapToInterval={179} // Adjust snapToInterval for SmallCard
           decelerationRate="fast"
         >
-          {plans.map((plan, index) => (
+          {placeholderPlans.map((plan, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
               <SmallCard title={plan.title} caption={plan.caption} />
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Text style={styles.subHeaderText}>Even More</Text>
+        <Text style={styles.subHeaderText}>Shirts</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -206,13 +78,13 @@ export default function HomeScreen() {
           snapToInterval={179} // Adjust snapToInterval for SmallCard
           decelerationRate="fast"
         >
-          {plans.map((plan, index) => (
+          {placeholderPlans.map((plan, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
               <SmallCard title={plan.title} caption={plan.caption} />
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Text style={styles.subHeaderText}>Don't Miss</Text>
+        <Text style={styles.subHeaderText}>Hoodies</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -220,7 +92,7 @@ export default function HomeScreen() {
           snapToInterval={179} // Adjust snapToInterval for SmallCard
           decelerationRate="fast"
         >
-          {plans.map((plan, index) => (
+          {placeholderPlans.map((plan, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
               <SmallCard title={plan.title} caption={plan.caption} />
             </TouchableOpacity>
@@ -295,5 +167,4 @@ const styles = StyleSheet.create({
   spacer: {
     height: 70, // Spacer height
   },
-  
 });
