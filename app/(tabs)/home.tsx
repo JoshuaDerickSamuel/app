@@ -1,18 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function ExploreScreen() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Explore Page!</Text>
-      <Text style={styles.subtitle}>
-        Discover new features and content here.
-      </Text>
+      <Text style={styles.title}>Welcome to the Home Page!</Text>
+      <Text style={styles.subtitle}>This is your starting point.</Text>
     </View>
   );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
