@@ -22,11 +22,8 @@ export default function HomeScreen() {
         onPress={() => router.push("/(components)/add")}
       > */}
       <Link href="/(components)/add">
-        <ThemedText style={styles.buttonText}>Add Clothes</ThemedText>
-        </Link>
-      {/* </TouchableOpacity> */}
-
-      {/* <Button title="Add Clothes" onPress={() => router.push("/(components)/add")} /> */}
+        <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
+      </Link>
     </ThemedView>
   );
 }
