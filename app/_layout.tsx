@@ -35,7 +35,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen
-          name="landing"
+          name="index"
           options={{
             headerShown: false,
             animation: "default",
