@@ -64,7 +64,7 @@ export default function SignUp() {
         password,
       });
 
-      router.replace("/(tabs)/home"); // Changed from push to replace
+      router.replace("/(tabs)/home"); 
     } catch (error) {
       Alert.alert("Sign Up Error");
     }
