@@ -13,11 +13,9 @@ export default function HomeScreen() {
         This is your starting point.
       </ThemedText>
 
-      <Link href="/(components)/add" style={styles.button} asChild>
-        <ThemedView style={styles.buttonContainer}>
-          <ThemedText style={styles.buttonText}>Add Clothes</ThemedText>
-        </ThemedView>
-      </Link>
+      <Link href="/(components)/add">
+              <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
+            </Link>
     </ThemedView>
   );
 }
@@ -43,13 +41,13 @@ const styles = StyleSheet.create({
     width: "50%",
   },
   buttonContainer: {
-    backgroundColor: "#0a7ea4",
+    // backgroundColor: "#0a7ea4",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
+    // color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
