@@ -19,8 +19,8 @@ export default function Index() {
       <View style={styles.roundedRectangle}>
         <Image source={require('../assets/images/logo1.png')} style={styles.logo1} resizeMode="contain" />
         <Text style={styles.spokenWordText}>
-          <Text style={styles.spokenText}>SPOKEN</Text>
-          <Text style={styles.wordText}>WORD</Text>
+          <Text style={styles.spokenText}>SMART</Text>
+          <Text style={styles.wordText}>CLOSET</Text>
         </Text>
       </View>
       <Text style={styles.description}>
