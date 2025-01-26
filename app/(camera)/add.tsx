@@ -115,16 +115,18 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={takePhoto}>
-            <Text style={styles.text}>Take Photo</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+      {!photoUri && (
+        <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={takePhoto}>
+              <Text style={styles.text}>Take Photo</Text>
+            </TouchableOpacity>
+          </View>
+        </CameraView>
+      )}
       {photoUri && (
         <Modal
           animationType="slide"
@@ -136,9 +138,12 @@ export default function App() {
         >
           <View style={styles.modalView}>
             <Image source={{ uri: photoUri }} style={styles.previewImage} />
-            <Button title="Upload Photo" onPress={uploadPhoto} />
-            <Button title="Close" onPress={() => setModalVisible(false)} />
-              
+            <TouchableOpacity style={styles.uploadButton} onPress={uploadPhoto}>
+              <Text style={styles.buttonText}>Upload Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
           </View>
         </Modal>
       )}
@@ -190,8 +195,27 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   previewImage: {
-    width: 300,
-    height: 400,
-    marginBottom: 20,
+    width: 300, // Increase the width
+    height: 300, // Increase the height
+    borderRadius: 20, // Add rounded corners
+    marginBottom: 20, // Add some margin at the bottom
+  },
+  uploadButton: {
+    backgroundColor: '#4CAF50', // Green background
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  closeButton: {
+    backgroundColor: '#f44336', // Red background
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

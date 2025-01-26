@@ -24,7 +24,7 @@ export default function ExploreScreen() {
     },
     {
       title: 'On a Budget?',
-      description: 'Explore stylish outfits without breaking the bank.',
+      description: 'Make financially sound and stylish decisions with our affordable outfit collection.',
       image: require('../../assets/images/budget.png'), 
       buttonText: 'Explore Affordable Styles',
     },
