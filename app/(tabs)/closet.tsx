@@ -17,6 +17,7 @@ type Outfit = {
   details: string;
   color: string;
   isColdWeather: boolean;
+  imageUrl: string; // Add imageUrl property
 };
 
 type ClothingItem = {
@@ -77,15 +78,15 @@ export default function HomeScreen() {
       const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
       const shortsSnapshot = await getDocs(shortsQuery);
       
-      setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
-      setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
-      setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
-      // setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as Outfit)));
-      setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
-      setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
-      setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
-      setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
-      setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
+      setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as Outfit)));
+      setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
+      setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
     } else {
       console.error('User is not authenticated');
     }
@@ -147,7 +148,7 @@ export default function HomeScreen() {
         >
           {outfits.map((outfit, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
-              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
+              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} imageUrl={outfit.imageUrl} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -324,6 +325,7 @@ export default function HomeScreen() {
                     details={selectedOutfit.details}
                     color={selectedOutfit.color}
                     isColdWeather={selectedOutfit.isColdWeather}
+                    imageUrl={selectedOutfit.imageUrl} // Pass imageUrl as a prop
                     onClose={closeModal}
                   />
                 )}
