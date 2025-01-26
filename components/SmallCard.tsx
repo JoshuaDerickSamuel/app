@@ -1,15 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 
 interface SmallCardProps {
   title: string;
   caption: string;
+  imageUrl: string;
 }
 
-const SmallCard: React.FC<SmallCardProps> = ({ title, caption }) => {
+const SmallCard: React.FC<SmallCardProps> = ({ title, caption, imageUrl }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.topRectangle} />
+      <View style={styles.topRectangle}>
+        <Image source={{ uri: imageUrl }} style={styles.image} />
+      </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
     </View>
@@ -18,14 +21,14 @@ const SmallCard: React.FC<SmallCardProps> = ({ title, caption }) => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingEnd: 10, // Add padding to move elements inward
+    paddingEnd: 10,
     marginVertical: 0,
     alignItems: 'center',
   },
   topRectangle: {
     width: 170,
-    height: 170,    
-    backgroundColor: '#5d7b95ff', // Change background color of the top rectangle
+    height: 170,
+    backgroundColor: '#5d7b95ff',
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -33,6 +36,13 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
     marginTop: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
   },
   title: {
     fontSize: 13,

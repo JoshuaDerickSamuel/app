@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, RefreshControl, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -25,6 +25,7 @@ type ClothingItem = {
   caption: string;
   color: string;
   isColdWeather: boolean;
+  imageUrl: string; // Add imageUrl property
 };
 
 export default function HomeScreen() {
@@ -41,56 +42,63 @@ export default function HomeScreen() {
   const [polos, setPolos] = useState<ClothingItem[]>([]);
   const [shirts, setShirts] = useState<ClothingItem[]>([]);
   const [shorts, setShorts] = useState<ClothingItem[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   const auth = getAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
-      if (user) {
-        const pantsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Pants"));
-        const pantsSnapshot = await getDocs(pantsQuery);
-        
-        const tShirtsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "T-Shirt"));
-        const tShirtsSnapshot = await getDocs(tShirtsQuery);
-        
-        const hoodiesQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Hoodie"));
-        const hoodiesSnapshot = await getDocs(hoodiesQuery);
-        
-        const outfitsQuery = query(collection(db, `users/${user.uid}/outfits`));
-        const outfitsSnapshot = await getDocs(outfitsQuery);
-        
-        const longSleeveQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Longsleeve"));
-        const longSleeveSnapshot = await getDocs(longSleeveQuery);
-        
-        const outwearQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Outwear"));
-        const outwearSnapshot = await getDocs(outwearQuery);
-        
-        const poloQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Polo"));
-        const poloSnapshot = await getDocs(poloQuery);
-        
-        const shirtQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shirt"));
-        const shirtSnapshot = await getDocs(shirtQuery);
-        
-        const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
-        const shortsSnapshot = await getDocs(shortsQuery);
-        
-        setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
-        setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-        setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      } else {
-        console.error('User is not authenticated');
-      }
-    };
+  const fetchData = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      const pantsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Pants"));
+      const pantsSnapshot = await getDocs(pantsQuery);
+      
+      const tShirtsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "T-Shirt"));
+      const tShirtsSnapshot = await getDocs(tShirtsQuery);
+      
+      const hoodiesQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Hoodie"));
+      const hoodiesSnapshot = await getDocs(hoodiesQuery);
+      
+      const outfitsQuery = query(collection(db, `users/${user.uid}/outfits`));
+      const outfitsSnapshot = await getDocs(outfitsQuery);
+      
+      const longSleeveQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Longsleeve"));
+      const longSleeveSnapshot = await getDocs(longSleeveQuery);
+      
+      const outwearQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Outwear"));
+      const outwearSnapshot = await getDocs(outwearQuery);
+      
+      const poloQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Polo"));
+      const poloSnapshot = await getDocs(poloQuery);
+      
+      const shirtQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shirt"));
+      const shirtSnapshot = await getDocs(shirtQuery);
+      
+      const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
+      const shortsSnapshot = await getDocs(shortsQuery);
+      
+      setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
+      setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+    } else {
+      console.error('User is not authenticated');
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   const handleCardPress = (item: Outfit | ClothingItem) => {
     if ('details' in item) {
@@ -113,7 +121,12 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.verticalScrollContainer}>
+      <ScrollView 
+        style={styles.verticalScrollContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.extra}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>{firstName}'s Closet</Text>
@@ -136,11 +149,6 @@ export default function HomeScreen() {
               <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
             </TouchableOpacity>
           ))}
-          <TouchableOpacity onPress={handleAddPress}>
-            <View style={styles.addCard}>
-              <MaterialIcons name="add" size={24} color="#333333" />
-            </View>
-          </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Pants</Text>
         <ScrollView 
@@ -152,7 +160,7 @@ export default function HomeScreen() {
         >
           {pants.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -171,7 +179,7 @@ export default function HomeScreen() {
         >
           {tShirts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -190,7 +198,7 @@ export default function HomeScreen() {
         >
           {hoodies.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -209,7 +217,7 @@ export default function HomeScreen() {
         >
           {longSleeves.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -228,7 +236,7 @@ export default function HomeScreen() {
         >
           {outwear.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -247,7 +255,7 @@ export default function HomeScreen() {
         >
           {polos.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -266,7 +274,7 @@ export default function HomeScreen() {
         >
           {shirts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -285,7 +293,7 @@ export default function HomeScreen() {
         >
           {shorts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
