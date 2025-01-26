@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
 
 interface SmallCardProps {
   title: string;
@@ -10,40 +9,39 @@ interface SmallCardProps {
   color: string;
 }
 
+const typeToImageMap: { [key in SmallCardProps['type']]: any } = {
+  pants: require('../assets/images/pants.png'),
+  't-shirt': require('../assets/images/tshirt.png'),
+  hoodies: require('../assets/images/hoodie.png'),
+  longsleeves: require('../assets/images/long.png'),
+  outerwear: require('../assets/images/hoodie.png'),
+  polos: require('../assets/images/polo.png'),
+  shirts: require('../assets/images/shirt.png'),
+  shorts: require('../assets/images/shorts.png'),
+};
+
 const SmallCard: React.FC<SmallCardProps> = ({ title, caption, imageUrl, type, color }) => {
   return (
     <View style={styles.container}>
-      {type === 'pants' ? (
-        <View style={styles.pantRectangle}>
-              <Image style={{height: 150, width: 200, alignItems:'center'}} source={require('../assets/images/pants.png')} tintColor={color} />
-        </View>
-      ) : (
-        <View style={[styles.topRectangle, { backgroundColor: color }]}>
-          <Image source={{ uri: imageUrl }} style={styles.image} />
-        </View>
-      )}
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.caption}>{caption}</Text>
+      <View style={[styles.rectangle]}>
+        <Image style={styles.image} source={typeToImageMap[type]} tintColor={color} />
+        <View style={[styles.tintOverlay, { backgroundColor: 'white', opacity: 0.1 }]} />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  tintOverlay: {
+    ...StyleSheet.absoluteFillObject,
+  },
   container: {
     paddingEnd: 10,
-    paddingBottom: 5, // Reduced bottom padding
+    paddingBottom: 5,
     marginVertical: 0,
     alignItems: 'center',
   },
-  topRectangle: {
-    width: 170,
-    height: 170,
-    borderRadius: 10,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pantRectangle: {
+  rectangle: {
     width: 170,
     height: 170,
     borderRadius: 10,
@@ -69,14 +67,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     color: '#666',
     fontWeight: 'thin',
-    textAlign: 'left',
-    width: 170,
-  },
-  type: {
-    fontSize: 13,
-    marginTop: 2,
-    color: '#666',
-    fontWeight: 'bold',
     textAlign: 'left',
     width: 170,
   },
