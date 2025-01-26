@@ -1,19 +1,21 @@
+
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { storage } from '../../firebaseConfig';
+import { ref, uploadBytes } from 'firebase/storage';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
   const cameraRef = useRef<CameraView>(null);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -29,7 +31,22 @@ export default function App() {
   async function takePhoto() {
     if (cameraRef.current) {
       const photo = await cameraRef.current.takePictureAsync();
+      if (photo) {
+        setPhotoUri(photo.uri);
+      }
       console.log(photo);
+    }
+  }
+
+  async function uploadPhoto() {
+    console.log('Photo uploaded to Firebase1');
+    if (photoUri) {
+      console.log('Photo uploaded to Firebase2');
+      const response = await fetch(photoUri);
+      const blob = await response.blob();
+      const storageRef = ref(storage, `photos/${Date.now()}.jpg`);
+      await uploadBytes(storageRef, blob);
+      console.log('Photo uploaded to Firebase3');
     }
   }
 
@@ -43,6 +60,11 @@ export default function App() {
           <TouchableOpacity style={styles.button} onPress={takePhoto}>
             <Text style={styles.text}>Take Photo</Text>
           </TouchableOpacity>
+          {photoUri && (
+            <TouchableOpacity style={styles.button} onPress={uploadPhoto}>
+              <Text style={styles.text}>Upload Photo</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </CameraView>
     </View>
