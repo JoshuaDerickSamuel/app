@@ -59,11 +59,14 @@ export default function App() {
         // Send the image to your server using the download URL
         const serverResponse = await sendToServer(downloadURL);
 
+        // Log the color in the console
+        console.log('Dominant Color:', serverResponse.dominant_color.color_code);
+
         // Add a new document to Cloud Firestore
         const user = auth.currentUser;
         if (user) {
           await addDoc(collection(db, `users/${user.uid}/clothes`), {
-            color: 'red', // Replace with actual color detection logic
+            color: serverResponse.dominant_color, // Use the hex color code from the server response
             type: serverResponse.label, // Use the type from the server response
             img_ref: downloadURL,
           });
