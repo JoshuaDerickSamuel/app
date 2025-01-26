@@ -16,6 +16,10 @@ type Outfit = {
   caption: string;
   details: string;
   color: string;
+  type1: string;
+  type2: string;
+  color1: string;
+  color2: string;
   isColdWeather: boolean;
 };
 
@@ -88,6 +92,10 @@ export default function HomeScreen() {
           caption: data.caption,
           details: data.details,
           color: data.color,
+          type1: data.type1,
+          type2: data.type2,
+          color1: data.color1,
+          color2: data.color2,
           isColdWeather: data.isColdWeather,
           imageUrl: data.imageUrl
         } as Outfit;
@@ -158,7 +166,7 @@ export default function HomeScreen() {
         >
           {outfits.map((outfit, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
-              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
+              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} type1={outfit.type1} color1={outfit.color1} type2={outfit.type2} color2={outfit.color2}/>
             </TouchableOpacity>
           ))}
         </ScrollView>

@@ -48,14 +48,14 @@ export default function HomeScreen() {
     }
   };
 
-  const uploadToFirebase = async (docId1: string, docId2: string) => {
+  const uploadToFirebase = async (docId1: string, docId2: string, type1: string, color1: string, type2: string, color2: string) => {
     try {
       const user = auth.currentUser;
       if (user) {
         console.log(`Current user: ${user.displayName}`); // Log the current user's name
         const comboDocRef = doc(db, `users/${user.uid}/outfits`, `${docId1}_${docId2}`);
-        await setDoc(comboDocRef, { docId1, docId2 });
-        console.log(`Combo document created with IDs: ${docId1}, ${docId2}`);
+        await setDoc(comboDocRef, { docId1, docId2, type1, color1, type2, color2 });
+        console.log(`Combo document created with IDs: ${docId1}, ${docId2}, types: ${type1}, ${type2}, colors: ${color1}, ${color2}`);
       } else {
         console.error("No authenticated user found");
       }
@@ -228,7 +228,11 @@ export default function HomeScreen() {
               const remainingCards = combos.length - cardIndex - 1;
               setCardsLeft(remainingCards);
               const swipedCardId1 = combos[cardIndex][0].id; // Use the document name as the ID
-              const swipedCardId2 = combos[cardIndex][1].id; // Use the document name as the ID
+              const swipedCardId2 = combos[cardIndex][1].id;
+              const type1 = combos[cardIndex][0].type;
+              const color1 = combos[cardIndex][0].color;
+              const type2 = combos[cardIndex][1].type;
+              const color2 = combos[cardIndex][1].color; // Use the document name as the ID
               setSwipedCardIds([...swipedCardIds, swipedCardId1, swipedCardId2]);
               console.log(`Swiped card IDs: ${swipedCardId1}, ${swipedCardId2}`);
             }}
@@ -237,9 +241,14 @@ export default function HomeScreen() {
             }}
             onSwipedRight={async (cardIndex) => {
               console.log(`Card ${cardIndex} swiped right`);
-              const swipedCardId1 = combos[cardIndex][0].id;
-              const swipedCardId2 = combos[cardIndex][1].id;
-              await uploadToFirebase(swipedCardId1, swipedCardId2);
+              const swipedCard = combos[cardIndex];
+              const swipedCardId1 = swipedCard[0].id;
+              const swipedCardId2 = swipedCard[1].id;
+              const type1 = swipedCard[0].type;
+              const color1 = swipedCard[0].color;
+              const type2 = swipedCard[1].type;
+              const color2 = swipedCard[1].color;
+              await uploadToFirebase(swipedCardId1, swipedCardId2, type1, color1, type2, color2);
             }}
           />
         </View>
