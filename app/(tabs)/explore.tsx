@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, FlatList, ImageBackground, Dimensions, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import vacationDetail from '../(components)/vacationDetail'; // Import VacationDetail
+import budgetDetail from '../(components)/budgetDetail'; // Import VacationDetail
+
 
 type Category = {
   title: string;
@@ -24,7 +27,7 @@ export default function ExploreScreen() {
     },
     {
       title: 'On a Budget?',
-      description: 'Explore stylish outfits without breaking the bank.',
+      description: 'Make financially sound and stylish decisions with our affordable outfits.',
       image: require('../../assets/images/budget.png'), 
       buttonText: 'Explore Affordable Styles',
     },
@@ -35,10 +38,16 @@ export default function ExploreScreen() {
 
   // Handle category selection
   const handleCategoryPress = (category: string) => {
-    router.push({
-      pathname: './[category]',
-      params: { category },
-    });
+    // Check the category and navigate to the corresponding page
+    if (category === 'On Vacation?') {
+      router.push({
+        pathname: '../(components)/vacationDetail', 
+      });
+    } else if (category === 'On a Budget?') {
+      router.push({
+        pathname: '../(components)/budgetDetail', 
+      });
+    }
   };
 
   // Render each category item in the carousel
