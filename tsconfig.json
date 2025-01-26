@@ -15,5 +15,5 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts", "components/camera.js" ]
+    "expo-env.d.ts", "components/camera.js", "firebaseConfig.js" ]
 }
