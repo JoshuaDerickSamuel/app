@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Alert, Modal, Image } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState, useRef } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { storage, app } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc, getFirestore } from 'firebase/firestore';
@@ -47,18 +45,19 @@ export default function App() {
   }
 
   async function uploadPhoto() {
+    if (photoUri) {
+      setUploading(true);  // Set uploading state to true
       try {
-        if (photoUri) {
         const response = await fetch(photoUri);
         const blob = await response.blob();
         const storageRef = ref(storage, `photos/${Date.now()}.jpg`);
         await uploadBytes(storageRef, blob);
         console.log('Photo uploaded to Firebase');
-  
+
+        // Retrieve the download URL of the uploaded file
         const downloadURL = await getDownloadURL(storageRef);
         console.log('Download URL:', downloadURL);
-  
-        await sendToServer(downloadURL);
+
         // Send the image to your server using the download URL
         const serverResponse = await sendToServer(downloadURL);
 
@@ -69,7 +68,7 @@ export default function App() {
         const user = auth.currentUser;
         if (user) {
           await addDoc(collection(db, `users/${user.uid}/clothes`), {
-            color: serverResponse.dominant_color, // Use the hex color code from the server response
+            color: serverResponse.dominant_color.color_code, // Use the hex color code from the server response
             type: serverResponse.label, // Use the type from the server response
             img_ref: downloadURL,
           });
@@ -80,32 +79,10 @@ export default function App() {
       } catch (error) {
         console.error('Error uploading photo:', error);
         Alert.alert('Error', 'Failed to upload the photo.');
+      } finally {
+        setUploading(false);  // Reset the uploading state
       }
     }
-  
-    async function sendToServer(downloadURL: string) {
-      try {
-        const formData = new FormData();
-        formData.append('file', {
-          uri: downloadURL,
-          type: 'image/jpeg',
-          name: 'photo.jpg',
-        } as any);
-  
-        const response = await fetch('http://10.244.113.222:8080/predict', {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-  
-        const result = await response.json();
-        Alert.alert('Server Response', JSON.stringify(result));
-      } catch (error) {
-        console.error('Error sending to server:', error);
-        Alert.alert('Error', 'Failed to send the image to the server.');
-      }
   }
 
   async function sendToServer(downloadURL: string) {
@@ -134,6 +111,7 @@ export default function App() {
       Alert.alert('Error', 'Failed to send the image to the server.');
       throw error;
     }
+  }
 
   return (
     <View style={styles.container}>
