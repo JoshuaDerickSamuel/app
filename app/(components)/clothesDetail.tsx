@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, Image } from 'react-native';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../firebaseConfig';
 
 type ClothesDetailProps = {
   id: string;
@@ -7,15 +9,38 @@ type ClothesDetailProps = {
   caption: string;
   color: string;
   isColdWeather: boolean;
-  imageUrl: string;
   onClose: () => void;
 };
 
-const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color, isColdWeather, imageUrl, onClose }) => {
-  console.log('ClothesDetail', imageUrl);
+const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color, isColdWeather, onClose }) => {
+  const [imageUrl, setImageUrl] = useState<string>('');
+
+  useEffect(() => {
+    const fetchImageUrl = async () => {
+      try {
+        const docRef = doc(db, `users/${auth.currentUser?.uid}/clothes/${id}`, id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setImageUrl(data.imageUrl);
+        } else {
+          console.error('No such document!');
+        }
+      } catch (error) {
+        console.error('Error fetching document:', error);
+      }
+    };
+
+    fetchImageUrl();
+  }, [id]);
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="contain" />
+      {imageUrl ? (
+        <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="contain" />
+      ) : (
+        <Text>Loading image...</Text>
+      )}
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
       <Text style={styles.color}>Color: {color}</Text>

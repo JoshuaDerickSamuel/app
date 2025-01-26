@@ -95,7 +95,7 @@ export default function App() {
         name: 'photo.jpg',
       } as any);  // Typecasting to 'any' to bypass TypeScript error
 
-      const response = await fetch('http://10.244.113.222:8080/predict', {
+      const response = await fetch('http://10.245.160.14:8080/predict', {
         method: 'POST',
         body: formData,
         headers: {
