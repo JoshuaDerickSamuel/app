@@ -17,7 +17,6 @@ type Outfit = {
   details: string;
   color: string;
   isColdWeather: boolean;
-  imageUrl: string; // Add imageUrl property
 };
 
 type ClothingItem = {
@@ -53,35 +52,46 @@ export default function HomeScreen() {
     if (user) {
       const pantsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Pants"));
       const pantsSnapshot = await getDocs(pantsQuery);
-      
+
       const tShirtsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "T-Shirt"));
       const tShirtsSnapshot = await getDocs(tShirtsQuery);
-      
+
       const hoodiesQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Hoodie"));
       const hoodiesSnapshot = await getDocs(hoodiesQuery);
-      
+
       const outfitsQuery = query(collection(db, `users/${user.uid}/outfits`));
       const outfitsSnapshot = await getDocs(outfitsQuery);
-      
+
       const longSleeveQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Longsleeve"));
       const longSleeveSnapshot = await getDocs(longSleeveQuery);
-      
+
       const outwearQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Outwear"));
       const outwearSnapshot = await getDocs(outwearQuery);
-      
+
       const poloQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Polo"));
       const poloSnapshot = await getDocs(poloQuery);
-      
+
       const shirtQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shirt"));
       const shirtSnapshot = await getDocs(shirtQuery);
-      
+
       const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
       const shortsSnapshot = await getDocs(shortsQuery);
-      
+
       setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
       setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
       setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
-      setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as Outfit)));
+      setOutfits(outfitsSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          title: data.title,
+          caption: data.caption,
+          details: data.details,
+          color: data.color,
+          isColdWeather: data.isColdWeather,
+          imageUrl: data.imageUrl
+        } as Outfit;
+      }));
       setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
       setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
       setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as ClothingItem)));
@@ -123,7 +133,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView 
+      <ScrollView
         style={styles.verticalScrollContainer}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -139,25 +149,25 @@ export default function HomeScreen() {
           </View>
         </View>
         <Text style={styles.firstSubHeaderText}>Outfits</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={300} 
+          snapToInterval={300}
           decelerationRate="fast"
         >
           {outfits.map((outfit, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
-              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details}/>
+              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
             </TouchableOpacity>
           ))}
         </ScrollView>
         <Text style={styles.subHeaderText}>Pants</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {pants.map((item, index) => (
@@ -172,11 +182,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>T-Shirts</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {tShirts.map((item, index) => (
@@ -191,11 +201,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Hoodies</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {hoodies.map((item, index) => (
@@ -210,11 +220,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Long Sleeves</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {longSleeves.map((item, index) => (
@@ -229,11 +239,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Outwear</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {outwear.map((item, index) => (
@@ -248,11 +258,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Polos</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {polos.map((item, index) => (
@@ -267,11 +277,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Shirts</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {shirts.map((item, index) => (
@@ -286,11 +296,11 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </ScrollView>
         <Text style={styles.subHeaderText}>Shorts</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
           style={styles.scrollContainer}
-          snapToInterval={179} 
+          snapToInterval={179}
           decelerationRate="fast"
         >
           {shorts.map((item, index) => (

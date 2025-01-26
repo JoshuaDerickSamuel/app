@@ -205,8 +205,14 @@ export default function HomeScreen() {
                 ) : (
                   <ThemedText style={styles.cardText}>{combo[0]?.type || "No combo available"}</ThemedText>
                 )}
-                <Image style={{width: 200,height:200}} tintColor={combo[1].color} source={typeToImageMap[combo[1].type.toLowerCase()]} />
-                <Image style={{width: 200,height:200}} tintColor={combo[0].color} source={typeToImageMap[combo[0].type.toLowerCase()]} />
+                {combo[0] && combo[1] && (
+                  <>
+                  <Image style={{width: 200,height:200}} tintColor={combo[1].color} source={typeToImageMap[combo[1].type.toLowerCase()]} />
+                  <Image style={{width: 200,height:200}} tintColor={combo[0].color} source={typeToImageMap[combo[0].type.toLowerCase()]} />
+                  </>
+                )}
+                {/* <Image style={{width: 200,height:200}} tintColor={combo[1].color} source={typeToImageMap[combo[1].type.toLowerCase()]} />
+                <Image style={{width: 200,height:200}} tintColor={combo[0].color} source={typeToImageMap[combo[0].type.toLowerCase()]} /> */}
               </View>
             )}
             stackSize={3}
