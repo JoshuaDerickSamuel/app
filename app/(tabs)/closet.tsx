@@ -1,33 +1,74 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; // Import MaterialIcons
+import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import BigCard from '../../components/BigCard';
-import SmallCard from '../../components/SmallCard'; // Import SmallCard
+import SmallCard from '../../components/SmallCard';
+import OutfitDetail from '../(components)/outfitDetail'; // Import OutfitDetail
+import ClothesDetail from '../(components)/clothesDetail'; // Import ClothesDetail
 
-type Plan = {
+type Outfit = {
   id: string;
   title: string;
   caption: string;
   details: string;
-  days: number;
+  color: string;
+  isColdWeather: boolean;
+};
+
+type ClothingItem = {
+  id: string;
+  title: string;
+  caption: string;
+  color: string;
+  isColdWeather: boolean;
 };
 
 export default function HomeScreen() {
   const [firstName, setFirstName] = useState('User');
-  const placeholderPlans: Plan[] = [
-    { id: '1', title: 'Plan 1', caption: 'Caption 1', details: 'Details 1', days: 7 },
-    { id: '2', title: 'Plan 2', caption: 'Caption 2', details: 'Details 2', days: 14 },
-    { id: '3', title: 'Plan 3', caption: 'Caption 3', details: 'Details 3', days: 21 },
+  const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
+  const [selectedClothingItem, setSelectedClothingItem] = useState<ClothingItem | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const placeholderOutfits: Outfit[] = [
+    { id: '1', title: 'Outfit 1', caption: 'Casual', details: 'Details about Outfit 1', color: 'Blue', isColdWeather: false },
+    { id: '2', title: 'Outfit 2', caption: 'Formal', details: 'Details about Outfit 2', color: 'Black', isColdWeather: true },
+    { id: '3', title: 'Outfit 3', caption: 'Sporty', details: 'Details about Outfit 3', color: 'Red', isColdWeather: false },
+  ];
+
+  const placeholderPants: ClothingItem[] = [
+    { id: '1', title: 'Pants 1', caption: 'Jeans', color: 'Blue', isColdWeather: false },
+    { id: '2', title: 'Pants 2', caption: 'Chinos', color: 'Beige', isColdWeather: false },
+    { id: '3', title: 'Pants 3', caption: 'Shorts', color: 'Black', isColdWeather: false },
+  ];
+
+  const placeholderShirts: ClothingItem[] = [
+    { id: '1', title: 'Shirt 1', caption: 'T-Shirt', color: 'White', isColdWeather: false },
+    { id: '2', title: 'Shirt 2', caption: 'Dress Shirt', color: 'Blue', isColdWeather: false },
+    { id: '3', title: 'Shirt 3', caption: 'Polo', color: 'Red', isColdWeather: false },
+  ];
+
+  const placeholderHoodies: ClothingItem[] = [
+    { id: '1', title: 'Hoodie 1', caption: 'Pullover', color: 'Gray', isColdWeather: true },
+    { id: '2', title: 'Hoodie 2', caption: 'Zip-Up', color: 'Black', isColdWeather: true },
+    { id: '3', title: 'Hoodie 3', caption: 'Sweatshirt', color: 'Navy', isColdWeather: true },
   ];
 
   const router = useRouter();
 
-  const handleCardPress = (plan: Plan) => {
-    router.push({
-      pathname: '../(components)/[plan].tsx',
-      params: { id: plan.id, title: plan.title, days: plan.days },
-    });
+  const handleCardPress = (item: Outfit | ClothingItem) => {
+    if ('details' in item) {
+      setSelectedOutfit(item);
+    } else {
+      setSelectedClothingItem(item);
+    }
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+    setSelectedOutfit(null);
+    setSelectedClothingItem(null);
   };
 
   return (
@@ -50,9 +91,9 @@ export default function HomeScreen() {
           snapToInterval={300} 
           decelerationRate="fast"
         >
-          {placeholderPlans.map((plan, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
-              <BigCard title={plan.title} caption={plan.caption} details={plan.details} />
+          {placeholderOutfits.map((outfit, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
+              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -61,12 +102,12 @@ export default function HomeScreen() {
           horizontal 
           showsHorizontalScrollIndicator={false} 
           style={styles.scrollContainer}
-          snapToInterval={179} // Adjust snapToInterval for SmallCard
+          snapToInterval={179} 
           decelerationRate="fast"
         >
-          {placeholderPlans.map((plan, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
-              <SmallCard title={plan.title} caption={plan.caption} />
+          {placeholderPants.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -75,12 +116,12 @@ export default function HomeScreen() {
           horizontal 
           showsHorizontalScrollIndicator={false} 
           style={styles.scrollContainer}
-          snapToInterval={179} // Adjust snapToInterval for SmallCard
+          snapToInterval={179} 
           decelerationRate="fast"
         >
-          {placeholderPlans.map((plan, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
-              <SmallCard title={plan.title} caption={plan.caption} />
+          {placeholderShirts.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -89,17 +130,54 @@ export default function HomeScreen() {
           horizontal 
           showsHorizontalScrollIndicator={false} 
           style={styles.scrollContainer}
-          snapToInterval={179} // Adjust snapToInterval for SmallCard
+          snapToInterval={179} 
           decelerationRate="fast"
         >
-          {placeholderPlans.map((plan, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(plan)}>
-              <SmallCard title={plan.title} caption={plan.caption} />
+          {placeholderHoodies.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
             </TouchableOpacity>
           ))}
         </ScrollView>
         <View style={styles.spacer} />
       </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={closeModal}
+      >
+        <TouchableWithoutFeedback onPress={closeModal}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContent}>
+                {selectedOutfit && (
+                  <OutfitDetail
+                    id={selectedOutfit.id}
+                    title={selectedOutfit.title}
+                    caption={selectedOutfit.caption}
+                    details={selectedOutfit.details}
+                    color={selectedOutfit.color}
+                    isColdWeather={selectedOutfit.isColdWeather}
+                    onClose={closeModal}
+                  />
+                )}
+                {selectedClothingItem && (
+                  <ClothesDetail
+                    id={selectedClothingItem.id}
+                    title={selectedClothingItem.title}
+                    caption={selectedClothingItem.caption}
+                    color={selectedClothingItem.color}
+                    isColdWeather={selectedClothingItem.isColdWeather}
+                    onClose={closeModal}
+                  />
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -110,37 +188,37 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     paddingTop: Platform.OS === 'ios' ? (StatusBar.currentHeight || 20) : 16,
-    backgroundColor: '#F8F8FF', // Changed to new color
+    backgroundColor: '#F8F8FF',
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    marginTop: 65, // Add margin to move elements lower
-    paddingHorizontal: 5, // Add padding to move elements inward
+    marginTop: 65,
+    paddingHorizontal: 5,
   },
   headerText: {
     fontSize: 35,
     fontWeight: 'bold',
     color: '#333333',
-    marginTop: 8, // Moved higher
+    marginTop: 8,
     alignSelf: 'flex-start',
-    fontFamily: 'OpenSans-Bold', // Ensure Open Sans Bold is used
+    fontFamily: 'OpenSans-Bold',
   },
   firstSubHeaderText: {
     fontSize: 22,
     color: '#333333',
-    fontFamily: 'OpenSans-Bold', // Ensure Open Sans Regular is used
-    marginTop: 18, // Move subheader lower
-    paddingHorizontal: 21, // Add padding to move elements inward
+    fontFamily: 'OpenSans-Bold',
+    marginTop: 18,
+    paddingHorizontal: 21,
   },
   subHeaderText: {
     fontSize: 22,
     color: '#333333',
-    fontFamily: 'OpenSans-Bold', // Ensure Open Sans Regular is used
-    marginTop: 5, // Move subheader lower
-    marginBottom: 5, // Move subheader lower
-    paddingHorizontal: 21, // Add padding to move elements inward
+    fontFamily: 'OpenSans-Bold',
+    marginTop: 5,
+    marginBottom: 5,
+    paddingHorizontal: 21,
   },
   iconContainer: {
     width: 30,
@@ -153,9 +231,9 @@ const styles = StyleSheet.create({
     borderColor: '#333333',
   },
   scrollContainer: {
-    paddingStart: 21, // Add padding to move elements inward
-    width: '100%', // Make the scroll container go from edge to edge
-    marginBottom: 20, // Add margin to create space between horizontal scroll views
+    paddingStart: 21,
+    width: '100%',
+    marginBottom: 20,
   },
   extra: {
     paddingHorizontal: 16,
@@ -165,6 +243,17 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   spacer: {
-    height: 70, // Spacer height
+    height: 70,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
   },
 });
