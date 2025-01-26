@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebaseConfig';
 import BigCard from '../../components/BigCard';
 import SmallCard from '../../components/SmallCard';
 import OutfitDetail from '../(components)/outfitDetail'; // Import OutfitDetail
 import ClothesDetail from '../(components)/clothesDetail'; // Import ClothesDetail
-
+import { getAuth} from 'firebase/auth';
 type Outfit = {
   id: string;
   title: string;
@@ -29,32 +31,27 @@ export default function HomeScreen() {
   const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const [selectedClothingItem, setSelectedClothingItem] = useState<ClothingItem | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const placeholderOutfits: Outfit[] = [
-    { id: '1', title: 'Outfit 1', caption: 'Casual', details: 'Details about Outfit 1', color: 'Blue', isColdWeather: false },
-    { id: '2', title: 'Outfit 2', caption: 'Formal', details: 'Details about Outfit 2', color: 'Black', isColdWeather: true },
-    { id: '3', title: 'Outfit 3', caption: 'Sporty', details: 'Details about Outfit 3', color: 'Red', isColdWeather: false },
-  ];
-
-  const placeholderPants: ClothingItem[] = [
-    { id: '1', title: 'Pants 1', caption: 'Jeans', color: 'Blue', isColdWeather: false },
-    { id: '2', title: 'Pants 2', caption: 'Chinos', color: 'Beige', isColdWeather: false },
-    { id: '3', title: 'Pants 3', caption: 'Shorts', color: 'Black', isColdWeather: false },
-  ];
-
-  const placeholderShirts: ClothingItem[] = [
-    { id: '1', title: 'Shirt 1', caption: 'T-Shirt', color: 'White', isColdWeather: false },
-    { id: '2', title: 'Shirt 2', caption: 'Dress Shirt', color: 'Blue', isColdWeather: false },
-    { id: '3', title: 'Shirt 3', caption: 'Polo', color: 'Red', isColdWeather: false },
-  ];
-
-  const placeholderHoodies: ClothingItem[] = [
-    { id: '1', title: 'Hoodie 1', caption: 'Pullover', color: 'Gray', isColdWeather: true },
-    { id: '2', title: 'Hoodie 2', caption: 'Zip-Up', color: 'Black', isColdWeather: true },
-    { id: '3', title: 'Hoodie 3', caption: 'Sweatshirt', color: 'Navy', isColdWeather: true },
-  ];
-
+  const [outfits, setOutfits] = useState<Outfit[]>([]);       
+  const [clothes, setClothes] = useState<ClothingItem[]>([]);
+  const auth = getAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      // const outfitsSnapshot = await getDocs(collection(db, 'outfits'));
+      const user = auth.currentUser;
+      if (user) {
+      const clothesSnapshot = await getDocs(collection(db, `users/${user.uid}/clothes`));
+      console.log(clothesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      // setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
+      setClothes(clothesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      } else {
+        console.error('User is not authenticated');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleCardPress = (item: Outfit | ClothingItem) => {
     if ('details' in item) {
@@ -91,13 +88,13 @@ export default function HomeScreen() {
           snapToInterval={300} 
           decelerationRate="fast"
         >
-          {placeholderOutfits.map((outfit, index) => (
+          {outfits.map((outfit, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
               <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
             </TouchableOpacity>
           ))}
         </ScrollView>
-        <Text style={styles.subHeaderText}>Pants</Text>
+        <Text style={styles.subHeaderText}>Clothes</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -105,35 +102,7 @@ export default function HomeScreen() {
           snapToInterval={179} 
           decelerationRate="fast"
         >
-          {placeholderPants.map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <Text style={styles.subHeaderText}>Shirts</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.scrollContainer}
-          snapToInterval={179} 
-          decelerationRate="fast"
-        >
-          {placeholderShirts.map((item, index) => (
-            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <Text style={styles.subHeaderText}>Hoodies</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          style={styles.scrollContainer}
-          snapToInterval={179} 
-          decelerationRate="fast"
-        >
-          {placeholderHoodies.map((item, index) => (
+          {clothes.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
               <SmallCard title={item.title} caption={item.caption} />
             </TouchableOpacity>
