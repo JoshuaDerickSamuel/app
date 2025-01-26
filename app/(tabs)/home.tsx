@@ -1,15 +1,16 @@
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
-
-
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const handleAddClothesPress = () => {
+    router.push("/add");
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText style={styles.title}>Welcome to the Home Page!</ThemedText>
@@ -17,9 +18,9 @@ export default function HomeScreen() {
         This is your starting point.
       </ThemedText>
 
-      <Link href="/(components)/add">
+      <TouchableOpacity onPress={handleAddClothesPress}>
         <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
-      </Link>
+      </TouchableOpacity>
     </ThemedView>
   );
 }
@@ -39,12 +40,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: "#666",
-    marginBottom: 30,
-  },
-  modelContainer: {
-    width: 300,
-    height: 300,
-    backgroundColor: "#eee",
     marginBottom: 30,
   },
   buttonText: {
