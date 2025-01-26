@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Image } from 'react-native';
 
 type ClothesDetailProps = {
   id: string;
@@ -13,6 +13,7 @@ type ClothesDetailProps = {
 const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color, isColdWeather, onClose }) => {
   return (
     <View style={styles.container}>
+      <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.image} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
       <Text style={styles.color}>Color: {color}</Text>
@@ -26,6 +27,11 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
   },
+  image: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -36,6 +42,7 @@ const styles = StyleSheet.create({
   },
   color: {
     fontSize: 16,
+    marginVertical: 10,
   },
   weather: {
     fontSize: 16,

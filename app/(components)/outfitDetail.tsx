@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet, Image } from 'react-native';
 
 type OutfitDetailProps = {
   id: string;
@@ -14,6 +14,7 @@ type OutfitDetailProps = {
 const OutfitDetail: React.FC<OutfitDetailProps> = ({ id, title, caption, details, color, isColdWeather, onClose }) => {
   return (
     <View style={styles.container}>
+      <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.image} />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
       <Text style={styles.details}>{details}</Text>
@@ -27,6 +28,11 @@ const OutfitDetail: React.FC<OutfitDetailProps> = ({ id, title, caption, details
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+  },
+  image: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
