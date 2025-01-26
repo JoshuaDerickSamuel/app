@@ -6,7 +6,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAuth } from "firebase/auth";
 import { storage, app } from '../../firebaseConfig';
-import { getFirestore, collection, getDocs, DocumentData, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, getDocs, DocumentData, doc, setDoc, getDoc } from "firebase/firestore";
 import tinycolor from "tinycolor2";
 import Swiper from "react-native-deck-swiper";
 import { ref, uploadString } from "firebase/storage";
@@ -21,15 +21,38 @@ export default function HomeScreen() {
   const [cardsLeft, setCardsLeft] = useState(0);
   const [swiperKey, setSwiperKey] = useState(0); // Add swiperKey state
   const [swipedCardIds, setSwipedCardIds] = useState<string[]>([]);
+  const [userFirstName, setUserFirstName] = useState<string>(""); // Add state for user's first name
 
   const handleAddClothesPress = () => {
     router.push("/add");
+  };
+
+  const logUserFirstName = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const userDocRef = doc(db, `users/${user.uid}`);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const firstName = userDoc.data().firstName;
+          setUserFirstName(firstName); // Set the user's first name in state
+          console.log(`User's first name: ${firstName}`);
+        } else {
+          console.error("User document not found");
+        }
+      } else {
+        console.error("No authenticated user found");
+      }
+    } catch (error) {
+      console.error("Error fetching user document:", error);
+    }
   };
 
   const uploadToFirebase = async (docId1: string, docId2: string) => {
     try {
       const user = auth.currentUser;
       if (user) {
+        console.log(`Current user: ${user.displayName}`); // Log the current user's name
         const comboDocRef = doc(db, `users/${user.uid}/outfits`, `${docId1}_${docId2}`);
         await setDoc(comboDocRef, { docId1, docId2 });
         console.log(`Combo document created with IDs: ${docId1}, ${docId2}`);
@@ -40,6 +63,11 @@ export default function HomeScreen() {
       console.error("Error uploading combo to Firestore:", error);
     }
   };
+
+  // Call logUserFirstName when the component mounts
+  React.useEffect(() => {
+    logUserFirstName();
+  }, []);
 
   const handleGeneratePress = async () => {
     try {
@@ -144,6 +172,13 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ThemedView style={styles.container}>
+        <View style={styles.circleContainer}>
+          <View style={styles.circle1} />
+          <View style={styles.circle2} />
+        </View>
+        <View style={styles.welcomeContainer}>
+          <ThemedText style={styles.welcomeText}>Welcome Back, {userFirstName}</ThemedText> {/* Wrap welcome text in ThemedText */}
+        </View>
         <View style={styles.swiperWrapper}>
           <Swiper
             key={swiperKey} // Use swiperKey to force re-render
@@ -188,12 +223,16 @@ export default function HomeScreen() {
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handleAddClothesPress}>
-            <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleGeneratePress}>
-            <ThemedText type="link" style={styles.buttonText}>Generate</ThemedText>
-          </TouchableOpacity>
+          <View style={styles.buttonWrapper}>
+            <TouchableOpacity style={styles.button} onPress={handleAddClothesPress}>
+              <ThemedText style={styles.buttonText}>Add Clothes</ThemedText>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonWrapper}>
+            <TouchableOpacity style={styles.button} onPress={handleGeneratePress}>
+              <ThemedText style={styles.buttonText}>Generate</ThemedText>
+            </TouchableOpacity>
+          </View>
         </View>
       </ThemedView>
     </SafeAreaView>
@@ -216,18 +255,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    marginBottom: 30,
-  },
+ 
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
-    // marginTop: 20, // Remove this line to avoid extra margin
+    color: "#fff", // Change text color to white
+    textAlign: "center", // Center text horizontally
   },
   clothesItem: {
-    marginTop: 10,
+    marginTop: 0,
     fontSize: 14,
   },
   comboCount: {
@@ -242,7 +278,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', // Center the swiper vertically
     alignItems: 'center',
     backgroundColor: "F8F8FF",
-    marginLeft: 35,
+    marginLeft: 40,
   },
   card: {
     justifyContent: "center",
@@ -269,7 +305,60 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     width: "80%",
-    marginTop: 20,
+    marginTop: -10,
     zIndex: 1, // Ensure buttons are above the swiper
+    
+  },
+  buttonWrapper: {
+    flex: 1,
+    alignItems: "center",
+  },
+  button: {
+    backgroundColor: "#355c7dff", // Add background color
+    paddingVertical: 10,
+    height: 50, // Set a fixed height for the buttons
+    width: 150, // Set a fixed width for the buttons
+    borderRadius: 10, // Add border radius
+    alignItems: "center",
+    justifyContent: "center", // Center text vertically
+    marginBottom: 20,
+  },
+  welcomeContainer: {
+    marginBottom: -50,
+    marginTop: 20,
+  },
+  welcomeText: {
+    fontSize: 26,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#F8F8FF", // Set text color to black
+  },
+  circleContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: -1, // Ensure circles are behind all other elements
+  },
+  circle1: {
+    position: "absolute",
+    width: 700,
+    height: 700,
+    borderRadius: 250,
+    backgroundColor: "#355c7dff",
+    top: -250,
+    left: -250,
+  },
+  circle2: {
+    position: "absolute",
+    width: 0,
+    height: 0,
+    borderRadius: 200,
+    backgroundColor: "#6c5b7bff",
+    bottom: -200,
+    right: -200,
   },
 });
