@@ -39,14 +39,12 @@ export default function App() {
   }
 
   async function uploadPhoto() {
-    console.log('Photo uploaded to Firebase1');
     if (photoUri) {
-      console.log('Photo uploaded to Firebase2');
       const response = await fetch(photoUri);
       const blob = await response.blob();
       const storageRef = ref(storage, `photos/${Date.now()}.jpg`);
       await uploadBytes(storageRef, blob);
-      console.log('Photo uploaded to Firebase3');
+      console.log('Photo uploaded to Firebase');
     }
   }
 
