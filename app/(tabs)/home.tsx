@@ -195,7 +195,7 @@ export default function HomeScreen() {
             cards={combos.length > 0 ? combos : [[{ type: "No combo available", color: "" }]]} // Default card if no combos
             renderCard={(combo) => (
               <View style={[styles.card, { width: width * 0.8, height: height * 0.6 }]}>
-                {combo[0] && combo[1] ? (
+                {/* {combo[0] && combo[1] ? (
 
                   <ThemedText style={styles.cardText}>
                     {combo[0].type} ({combo[0].color}) and {combo[1].type} ({combo[1].color})
@@ -204,7 +204,7 @@ export default function HomeScreen() {
                    
                 ) : (
                   <ThemedText style={styles.cardText}>{combo[0]?.type || "No combo available"}</ThemedText>
-                )}
+                )} */}
                 {combo[0] && combo[1] && (
                   <>
                   <Image style={{width: 200,height:200}} tintColor={combo[1].color} source={typeToImageMap[combo[1].type.toLowerCase()]} />

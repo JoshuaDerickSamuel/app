@@ -359,8 +359,7 @@ export default function HomeScreen() {
                     title={selectedClothingItem.title}
                     caption={selectedClothingItem.caption}
                     color={selectedClothingItem.color}
-                    isColdWeather={selectedClothingItem.isColdWeather}
-                    imageUrl={selectedClothingItem.imageUrl} // Pass imageUrl as a prop
+                    isColdWeather={selectedClothingItem.isColdWeather}// Pass imageUrl as a prop
                     onClose={closeModal}
                   />
                 )}

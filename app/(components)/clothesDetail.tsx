@@ -18,7 +18,9 @@ const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color
   useEffect(() => {
     const fetchImageUrl = async () => {
       try {
-        const docRef = doc(db, `users/${auth.currentUser?.uid}/clothes/${id}`, id);
+                // ...existing code...
+        const docRef = doc(db, `users/${auth.currentUser?.uid}/clothes`, id);
+        // ...existing code...
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
