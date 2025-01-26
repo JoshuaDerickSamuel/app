@@ -7,13 +7,15 @@ type ClothesDetailProps = {
   caption: string;
   color: string;
   isColdWeather: boolean;
+  imageUrl: string;
   onClose: () => void;
 };
 
-const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color, isColdWeather, onClose }) => {
+const ClothesDetail: React.FC<ClothesDetailProps> = ({ id, title, caption, color, isColdWeather, imageUrl, onClose }) => {
+  console.log('ClothesDetail', imageUrl);
   return (
     <View style={styles.container}>
-      <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.image} />
+      <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="contain" />
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
       <Text style={styles.color}>Color: {color}</Text>
@@ -28,9 +30,11 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   image: {
-    width: 150,
-    height: 150,
+    width: '100%',
+    height: undefined,
+    aspectRatio: 1, // Maintain the aspect ratio
     marginBottom: 20,
+    borderRadius: 10,
   },
   title: {
     fontSize: 24,

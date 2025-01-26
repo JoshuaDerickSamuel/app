@@ -77,15 +77,15 @@ export default function HomeScreen() {
       const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
       const shortsSnapshot = await getDocs(shortsQuery);
       
-      setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
-      setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+      setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
+      setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
+      setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
+      // setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().imageUrl } as Outfit)));
+      setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
+      setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
+      setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref } as ClothingItem)));
+      setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
+      setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), imageUrl: doc.data().img_ref} as ClothingItem)));
     } else {
       console.error('User is not authenticated');
     }
@@ -334,6 +334,7 @@ export default function HomeScreen() {
                     caption={selectedClothingItem.caption}
                     color={selectedClothingItem.color}
                     isColdWeather={selectedClothingItem.isColdWeather}
+                    imageUrl={selectedClothingItem.imageUrl} // Pass imageUrl as a prop
                     onClose={closeModal}
                   />
                 )}
