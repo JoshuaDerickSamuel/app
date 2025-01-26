@@ -23,9 +23,7 @@ export default function Index() {
           <Text style={styles.wordText}>CLOSET</Text>
         </Text>
       </View>
-      <Text style={styles.description}>
-        Enhance your Bible study with personalized reading plans, audio integration, and progress tracking. Study Scripture your way, anytime, anywhere.
-      </Text>
+      <Text style={styles.description}>Unlock the potential of your wardrobe with AI-driven styling. Scan your clothes, pair them up, and create perfect outfits effortlessly.      </Text>
       
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
