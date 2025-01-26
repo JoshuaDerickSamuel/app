@@ -1,8 +1,10 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
-import { storage } from '../../firebaseConfig';
+import { storage, app } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -10,6 +12,8 @@ export default function App() {
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const cameraRef = useRef<CameraView>(null);
+  const auth = getAuth();
+  const db = getFirestore(app);
 
   if (!permission) {
     return <View />;
@@ -53,7 +57,20 @@ export default function App() {
         console.log('Download URL:', downloadURL);
 
         // Send the image to your server using the download URL
-        await sendToServer(downloadURL);
+        const serverResponse = await sendToServer(downloadURL);
+
+        // Add a new document to Cloud Firestore
+        const user = auth.currentUser;
+        if (user) {
+          await addDoc(collection(db, `users/${user.uid}/clothes`), {
+            color: 'red', // Replace with actual color detection logic
+            type: serverResponse.label, // Use the type from the server response
+            img_ref: downloadURL,
+          });
+          console.log('Document added to Firestore');
+        } else {
+          console.error('No authenticated user found');
+        }
       } catch (error) {
         console.error('Error uploading photo:', error);
         Alert.alert('Error', 'Failed to upload the photo.');
@@ -83,9 +100,11 @@ export default function App() {
 
       const result = await response.json();
       Alert.alert('Server Response', JSON.stringify(result));
+      return result;
     } catch (error) {
       console.error('Error sending to server:', error);
       Alert.alert('Error', 'Failed to send the image to the server.');
+      throw error;
     }
   }
 
