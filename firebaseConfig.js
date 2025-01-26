@@ -3,8 +3,9 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { initializeAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
+import { getStorage } from "firebase/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -31,6 +32,6 @@ isSupported().then((supported) => {
 
 const auth = initializeAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-
-export { app, analytics, auth, db };
+export { app, analytics, auth, db, storage };
