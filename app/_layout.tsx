@@ -65,7 +65,7 @@ export default function RootLayout() {
             name="(camera)"
             options={{
               headerShown: false,
-              gestureEnabled: false,
+              gestureEnabled: true,
               presentation: "card",
               animation: "default",
             }}

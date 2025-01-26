@@ -8,6 +8,7 @@ export default function CameraLayout() {
         headerShown: false,
         animation: "default",
         presentation: "card",
+        gestureEnabled: true, // Enable swipe gestures
       }}
     >
       <Stack.Screen name="add" />
