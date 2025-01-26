@@ -9,7 +9,7 @@ export default function VacationDetail() {
   const handleSearch = () => {
     if (flightNumber) {
       // Navigate to vacation-recommendation page with the flight number as a query parameter
-      router.push('./(components)/vacationRecommendation?flightNumber=${flightNumber}');
+      router.push('./(components)/vacationRecommendations?flightNumber=${flightNumber}');
     } else {
       alert('Please enter a flight number');
     }
