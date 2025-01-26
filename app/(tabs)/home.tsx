@@ -5,14 +5,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAuth } from "firebase/auth";
-import { getFirestore, collection, getDocs, DocumentData } from "firebase/firestore";
+import { storage, app } from '../../firebaseConfig';
+import { getFirestore, collection, getDocs, DocumentData, doc, setDoc } from "firebase/firestore";
 import tinycolor from "tinycolor2";
 import Swiper from "react-native-deck-swiper";
+import { ref, uploadString } from "firebase/storage";
 
 export default function HomeScreen() {
-  const router = useRouter();
   const auth = getAuth();
-  const db = getFirestore();
+  const db = getFirestore(app);
+  const router = useRouter();
   const [clothesList, setClothesList] = useState<DocumentData[]>([]);
   const [combos, setCombos] = useState<DocumentData[][]>([]);
   const [comboCount, setComboCount] = useState(0);
@@ -22,6 +24,21 @@ export default function HomeScreen() {
 
   const handleAddClothesPress = () => {
     router.push("/add");
+  };
+
+  const uploadToFirebase = async (docId1: string, docId2: string) => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        const comboDocRef = doc(db, `users/${user.uid}/outfits`, `${docId1}_${docId2}`);
+        await setDoc(comboDocRef, { docId1, docId2 });
+        console.log(`Combo document created with IDs: ${docId1}, ${docId2}`);
+      } else {
+        console.error("No authenticated user found");
+      }
+    } catch (error) {
+      console.error("Error uploading combo to Firestore:", error);
+    }
   };
 
   const handleGeneratePress = async () => {
@@ -162,8 +179,11 @@ export default function HomeScreen() {
             onSwipedLeft={(cardIndex) => {
               console.log(`Card ${cardIndex} swiped left`);
             }}
-            onSwipedRight={(cardIndex) => {
+            onSwipedRight={async (cardIndex) => {
               console.log(`Card ${cardIndex} swiped right`);
+              const swipedCardId1 = combos[cardIndex][0].id;
+              const swipedCardId2 = combos[cardIndex][1].id;
+              await uploadToFirebase(swipedCardId1, swipedCardId2);
             }}
           />
         </View>
