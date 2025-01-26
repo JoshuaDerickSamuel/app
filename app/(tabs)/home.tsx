@@ -17,6 +17,8 @@ export default function HomeScreen() {
   const [combos, setCombos] = useState<DocumentData[][]>([]);
   const [comboCount, setComboCount] = useState(0);
   const [cardsLeft, setCardsLeft] = useState(0);
+  const [swiperKey, setSwiperKey] = useState(0); // Add swiperKey state
+  const [swipedCardIds, setSwipedCardIds] = useState<string[]>([]);
 
   const handleAddClothesPress = () => {
     router.push("/add");
@@ -64,6 +66,8 @@ export default function HomeScreen() {
         setComboCount(combos.length);
         setCardsLeft(combos.length);
         console.log(`Total amount of combos: ${combos.length}`);
+        // Reinitialize Swiper props
+        setSwiperKey(swiperKey + 1);
       } else {
         console.error("No authenticated user found");
       }
@@ -125,7 +129,7 @@ export default function HomeScreen() {
       <ThemedView style={styles.container}>
         <View style={styles.swiperWrapper}>
           <Swiper
-            key={combos.length} // Add key to force re-render
+            key={swiperKey} // Use swiperKey to force re-render
             cards={combos.length > 0 ? combos : [[{ type: "No combo available", color: "" }]]} // Default card if no combos
             renderCard={(combo) => (
               <View style={[styles.card, { width: width * 0.8, height: height * 0.6 }]}>
@@ -150,16 +154,16 @@ export default function HomeScreen() {
             onSwiped={(cardIndex) => {
               const remainingCards = combos.length - cardIndex - 1;
               setCardsLeft(remainingCards);
+              const swipedCardId1 = combos[cardIndex][0].id; // Use the document name as the ID
+              const swipedCardId2 = combos[cardIndex][1].id; // Use the document name as the ID
+              setSwipedCardIds([...swipedCardIds, swipedCardId1, swipedCardId2]);
+              console.log(`Swiped card IDs: ${swipedCardId1}, ${swipedCardId2}`);
             }}
             onSwipedLeft={(cardIndex) => {
               console.log(`Card ${cardIndex} swiped left`);
             }}
             onSwipedRight={(cardIndex) => {
               console.log(`Card ${cardIndex} swiped right`);
-              const combo = combos[cardIndex];
-              if (combo && combo[0] && combo[1]) {
-                console.log(`Document IDs: ${combo[0].id}, ${combo[1].id}`);
-              }
             }}
           />
         </View>
