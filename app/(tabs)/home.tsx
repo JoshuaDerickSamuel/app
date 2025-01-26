@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Dimensions, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -168,7 +168,17 @@ export default function HomeScreen() {
   };
 
   const { width, height } = Dimensions.get("window");
-
+  const typeToImageMap: { [key: string]: any } = {
+    pants: require('../../assets/images/pants.png'),
+    't-shirt': require('../../assets/images/tshirt.png'),
+    hoodies: require('../../assets/images/hoodie.png'),
+    longsleeves: require('../../assets/images/long.png'),
+    outerwear: require('../../assets/images/hoodie.png'),
+    polos: require('../../assets/images/polo.png'),
+    shirts: require('../../assets/images/shirt.png'),
+    shorts: require('../../assets/images/shorts.png'),
+  };
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ThemedView style={styles.container}>
@@ -186,12 +196,17 @@ export default function HomeScreen() {
             renderCard={(combo) => (
               <View style={[styles.card, { width: width * 0.8, height: height * 0.6 }]}>
                 {combo[0] && combo[1] ? (
+
                   <ThemedText style={styles.cardText}>
                     {combo[0].type} ({combo[0].color}) and {combo[1].type} ({combo[1].color})
                   </ThemedText>
+                  
+                   
                 ) : (
                   <ThemedText style={styles.cardText}>{combo[0]?.type || "No combo available"}</ThemedText>
                 )}
+                <Image style={{width: 200,height:200}} tintColor={combo[1].color} source={typeToImageMap[combo[1].type.toLowerCase()]} />
+                <Image style={{width: 200,height:200}} tintColor={combo[0].color} source={typeToImageMap[combo[0].type.toLowerCase()]} />
               </View>
             )}
             stackSize={3}
@@ -256,6 +271,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
  
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+  },
   buttonText: {
     fontSize: 16,
     fontWeight: "600",

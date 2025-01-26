@@ -148,7 +148,7 @@ export default function HomeScreen() {
         >
           {outfits.map((outfit, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(outfit)}>
-              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} imageUrl={outfit.imageUrl} />
+              <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details}/>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -325,7 +325,6 @@ export default function HomeScreen() {
                     details={selectedOutfit.details}
                     color={selectedOutfit.color}
                     isColdWeather={selectedOutfit.isColdWeather}
-                    imageUrl={selectedOutfit.imageUrl} // Pass imageUrl as a prop
                     onClose={closeModal}
                   />
                 )}
