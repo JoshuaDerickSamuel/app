@@ -421,20 +421,14 @@ const styles = StyleSheet.create({
   },
   addCard: {
     paddingEnd: 10,
+    paddingBottom: 5, // Reduced bottom padding
     marginVertical: 0,
     alignItems: 'center',
     width: 170,
     height: 170,
-    // backgroundColor: '#5d7b95ff',
     borderColor: '#333333',
-    borderWidth: 1,
+    borderWidth: 2,
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    marginTop: 4,
     justifyContent: 'center',
   },
   addIcon: {
