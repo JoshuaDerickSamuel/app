@@ -12,6 +12,8 @@ type Outfit = {
   title: string;
   caption: string;
   details: string;
+  color: string;
+  isColdWeather: boolean;
 };
 
 type ClothingItem = {
@@ -29,9 +31,9 @@ export default function HomeScreen() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const placeholderOutfits: Outfit[] = [
-    { id: '1', title: 'Outfit 1', caption: 'Casual', details: 'Details about Outfit 1' },
-    { id: '2', title: 'Outfit 2', caption: 'Formal', details: 'Details about Outfit 2' },
-    { id: '3', title: 'Outfit 3', caption: 'Sporty', details: 'Details about Outfit 3' },
+    { id: '1', title: 'Outfit 1', caption: 'Casual', details: 'Details about Outfit 1', color: 'Blue', isColdWeather: false },
+    { id: '2', title: 'Outfit 2', caption: 'Formal', details: 'Details about Outfit 2', color: 'Black', isColdWeather: true },
+    { id: '3', title: 'Outfit 3', caption: 'Sporty', details: 'Details about Outfit 3', color: 'Red', isColdWeather: false },
   ];
 
   const placeholderPants: ClothingItem[] = [
@@ -154,7 +156,10 @@ export default function HomeScreen() {
                   <OutfitDetail
                     id={selectedOutfit.id}
                     title={selectedOutfit.title}
+                    caption={selectedOutfit.caption}
                     details={selectedOutfit.details}
+                    color={selectedOutfit.color}
+                    isColdWeather={selectedOutfit.isColdWeather}
                     onClose={closeModal}
                   />
                 )}

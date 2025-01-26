@@ -1,17 +1,51 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 
-// outfits detail
-export const OutfitDetail = () => {
+type OutfitDetailProps = {
+  id: string;
+  title: string;
+  caption: string;
+  details: string;
+  color: string;
+  isColdWeather: boolean;
+  onClose: () => void;
+};
+
+const OutfitDetail: React.FC<OutfitDetailProps> = ({ id, title, caption, details, color, isColdWeather, onClose }) => {
   return (
-    <Text style={styles.firstSubHeaderText}>Outfit Detail</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.caption}>{caption}</Text>
+      <Text style={styles.details}>{details}</Text>
+      <Text style={styles.color}>Color: {color}</Text>
+      <Text style={styles.weather}>Cold Weather: {isColdWeather ? 'Yes' : 'No'}</Text>
+      <Button title="Close" onPress={onClose} />
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  firstSubHeaderText: {
-    fontSize: 20,
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
+  },
+  caption: {
+    fontSize: 18,
+    marginVertical: 10,
+  },
+  details: {
+    fontSize: 16,
+  },
+  color: {
+    fontSize: 16,
+    marginVertical: 10,
+  },
+  weather: {
+    fontSize: 16,
+    marginVertical: 10,
   },
 });
 
