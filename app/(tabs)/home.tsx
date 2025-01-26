@@ -1,17 +1,22 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, getDocs, DocumentData } from "firebase/firestore";
 import tinycolor from "tinycolor2";
+import Swiper from "react-native-deck-swiper";
 
 export default function HomeScreen() {
   const router = useRouter();
   const auth = getAuth();
   const db = getFirestore();
   const [clothesList, setClothesList] = useState<DocumentData[]>([]);
+  const [combos, setCombos] = useState<DocumentData[][]>([]);
+  const [comboCount, setComboCount] = useState(0);
+  const [cardsLeft, setCardsLeft] = useState(0);
 
   const handleAddClothesPress = () => {
     router.push("/add");
@@ -23,10 +28,42 @@ export default function HomeScreen() {
       if (user) {
         const clothesCollection = collection(db, `users/${user.uid}/clothes`);
         const clothesSnapshot = await getDocs(clothesCollection);
-        const clothesData = clothesSnapshot.docs.map(doc => doc.data());
+        let clothesData = clothesSnapshot.docs.map(doc => ({ id: doc.id, color: doc.data().color, type: doc.data().type, ...doc.data() }));
+
+        // Shuffle the clothesData array
+        clothesData = clothesData.sort(() => Math.random() - 0.5);
+
         setClothesList(clothesData);
         console.log(`Number of clothes documents: ${clothesData.length}`);
-        console.log(clothesData);
+
+        // Calculate the total amount of combos
+        let combos = [];
+        const usedClothes = new Set();
+        for (let i = 0; i < clothesData.length; i++) {
+          if (usedClothes.has(i)) continue;
+          for (let j = 0; j < clothesData.length; j++) {
+            if (usedClothes.has(j)) continue;
+            const closestColorI = getClosestColor(clothesData[i].color);
+            const closestColorJ = getClosestColor(clothesData[j].color);
+            const isNeutralI = isNeutralColor(closestColorI);
+            const isNeutralJ = isNeutralColor(closestColorJ);
+
+            if ((clothesData[i].type === "Pants" || clothesData[i].type === "Shorts") && 
+                (clothesData[j].type === "Shirt" || clothesData[j].type === "Hoodie" || clothesData[j].type === "Longsleeve" || clothesData[j].type === "Outwear" || clothesData[j].type === "Polo" || clothesData[j].type === "T-Shirt") && 
+                (isNeutralI || isNeutralJ)) {
+              combos.push([clothesData[i], clothesData[j]]);
+              usedClothes.add(i);
+              usedClothes.add(j);
+              console.log(`Match found: ${clothesData[i].type} (${clothesData[i].color}, ${closestColorI} ${isNeutralI ? "neutral" : ""}) and ${clothesData[j].type} (${clothesData[j].color}, ${closestColorJ} ${isNeutralJ ? "neutral" : ""})`);
+              console.log(""); // Print an empty line
+              break; // Move to the next bottom cloth after finding a match
+            }
+          }
+        }
+        setCombos(combos);
+        setComboCount(combos.length);
+        setCardsLeft(combos.length);
+        console.log(`Total amount of combos: ${combos.length}`);
       } else {
         console.error("No authenticated user found");
       }
@@ -47,6 +84,12 @@ export default function HomeScreen() {
       white: "#FFFFFF",
       black: "#000000",
       grey: "#808080",
+      tan: "#D2B48C",
+      nude: "#F5CBA7",
+      lightBrown: "#A52A2A",
+      lightGray: "#D3D3D3",
+      darkBlue: "#00008B",
+      creme: "#FFFDD0",
     };
 
     let closestColor = "";
@@ -70,40 +113,79 @@ export default function HomeScreen() {
     return closestColor;
   };
 
+  const isNeutralColor = (color: string) => {
+    const neutralColors = ["black", "grey", "tan", "nude", "lightBrown", "lightGray", "darkBlue", "creme"];
+    return neutralColors.includes(color);
+  };
+
+  const { width, height } = Dimensions.get("window");
+
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText style={styles.title}>Welcome to the Home Page!</ThemedText>
-      <ThemedText style={styles.subtitle}>
-        This is your starting point.
-      </ThemedText>
-
-      <TouchableOpacity onPress={handleAddClothesPress}>
-        <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={handleGeneratePress}>
-        <ThemedText type="link" style={styles.buttonText}>Generate</ThemedText>
-      </TouchableOpacity>
-
-      {/* Example of traversing the clothesList */}
-      {clothesList.map((clothes, index) => {
-        const closestColor = getClosestColor(clothes.color);
-        return (
-          <ThemedText key={index} style={[styles.clothesItem, { color: clothes.color }]}>
-            Type: {clothes.type} - Closest Color: {closestColor}
-          </ThemedText>
-        );
-      })}
-    </ThemedView>
+    <SafeAreaView style={styles.safeArea}>
+      <ThemedView style={styles.container}>
+        <View style={styles.swiperWrapper}>
+          <Swiper
+            key={combos.length} // Add key to force re-render
+            cards={combos.length > 0 ? combos : [[{ type: "No combo available", color: "" }]]} // Default card if no combos
+            renderCard={(combo) => (
+              <View style={[styles.card, { width: width * 0.8, height: height * 0.6 }]}>
+                {combo[0] && combo[1] ? (
+                  <ThemedText style={styles.cardText}>
+                    {combo[0].type} ({combo[0].color}) and {combo[1].type} ({combo[1].color})
+                  </ThemedText>
+                ) : (
+                  <ThemedText style={styles.cardText}>{combo[0]?.type || "No combo available"}</ThemedText>
+                )}
+              </View>
+            )}
+            stackSize={3}
+            backgroundColor="F8F8FF"
+            cardIndex={0}
+            showSecondCard={true}
+            disableTopSwipe
+            disableBottomSwipe
+            disableLeftSwipe={cardsLeft <= 1} // Disable left swipe if only one card
+            disableRightSwipe={cardsLeft <= 1} // Disable right swipe if only one card
+            containerStyle={styles.swiperContainer}
+            onSwiped={(cardIndex) => {
+              const remainingCards = combos.length - cardIndex - 1;
+              setCardsLeft(remainingCards);
+            }}
+            onSwipedLeft={(cardIndex) => {
+              console.log(`Card ${cardIndex} swiped left`);
+            }}
+            onSwipedRight={(cardIndex) => {
+              console.log(`Card ${cardIndex} swiped right`);
+              const combo = combos[cardIndex];
+              if (combo && combo[0] && combo[1]) {
+                console.log(`Document IDs: ${combo[0].id}, ${combo[1].id}`);
+              }
+            }}
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity onPress={handleAddClothesPress}>
+            <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleGeneratePress}>
+            <ThemedText type="link" style={styles.buttonText}>Generate</ThemedText>
+          </TouchableOpacity>
+        </View>
+      </ThemedView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "F8F8FF",
   },
   title: {
     fontSize: 24,
@@ -118,10 +200,52 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
-    marginTop: 20, // Add margin to separate the buttons
+    // marginTop: 20, // Remove this line to avoid extra margin
   },
   clothesItem: {
     marginTop: 10,
     fontSize: 14,
+  },
+  comboCount: {
+    marginTop: 20,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  swiperWrapper: {
+    flex: 1,
+    maxHeight: "80%",
+    width: '100%',
+    justifyContent: 'center', // Center the swiper vertically
+    alignItems: 'center',
+    backgroundColor: "F8F8FF",
+    marginLeft: 35,
+  },
+  card: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
+    padding: 20,
+  },
+  cardText: {
+    fontSize: 18,
+    color: "#333",
+  },
+  swiperContainer: {
+    flex: 1,
+    justifyContent: 'center', // Center the swiper vertically
+    alignItems: 'center', // Center the swiper horizontally
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginTop: 20,
+    zIndex: 1, // Ensure buttons are above the swiper
   },
 });
