@@ -25,70 +25,77 @@ const typeToImageMap: { [key: string]: any } = {
 const BigCard: React.FC<BigCardProps> = ({ title, caption, details, type1, color1, type2, color2 }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.topRectangle} />
-      <Image source={typeToImageMap[type1.toLowerCase()]} style={{ width: 300, height: 320 }} />
+      {/* Top Rectangle with Image */}
+      <View style={styles.topRectangle}>
+      <Image source={typeToImageMap[type2.toLowerCase()]} style={styles.image} tintColor={color2}/>
+        <Image source={typeToImageMap[type1.toLowerCase()]} style={styles.image} tintColor={color1}/>
+      </View>
+
+      {/* Text Content */}
+      <View style={styles.bottomRectangle}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.caption}>{caption}</Text>
         <Text style={styles.typeColorText}>Type 1: {type1}, Color 1: {color1}</Text>
         <Text style={styles.typeColorText}>Type 2: {type2}, Color 2: {color2}</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingEnd: 10, // Add padding to move elements inward
-    marginVertical: 0,
-    width: 300
+    marginVertical: 10,
+    width: 300,
+    borderRadius: 10,
+    overflow: 'hidden', // Ensure content stays within rounded corners
+    backgroundColor: '#355c7dff', // Background color for the card
+    elevation: 5, // Add shadow for Android
+    shadowColor: '#000', // Add shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
   },
   topRectangle: {
-    height:230,
-    backgroundColor: '#5d7b95ff', // Change background color of the top rectangle
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    marginTop: 4
+    height: 230,
+    backgroundColor: '#5d7b95ff', // Background color of the top rectangle
+    justifyContent: 'center', // Center image vertically
+    alignItems: 'center', // Center image horizontally
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   bottomRectangle: {
-    height: 90,
-    padding: 10,
-    backgroundColor: '#355c7dff', // Change background color of the bottom rectangle
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    marginTop: 0, // Remove gap between rectangles
-    alignItems: 'center', // Center the text horizontally
-    justifyContent: 'center', // Center the text vertically
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    alignItems: 'center', // Center text horizontally
+    justifyContent: 'center', // Center text vertically
+  },
+  image: {
+    width: '80%', // Adjust image width relative to the card
+    height: '80%', // Adjust image height relative to the card
+    resizeMode: 'contain', // Ensure the image fits within its container without distortion
   },
   title: {
-    fontSize: 16,
-    color: '#FFFFFF', // Change text color to white
-    marginBottom: 0,
-    fontWeight: '600', // Ensure the caption text is thin
-    fontFamily: 'Open Sans', // Ensure Open Sans font is used
-    textAlign: 'center', // Center align the text
+    fontSize: 18,
+    color: '#FFFFFF',
+    marginBottom: 5,
+    fontWeight: '600',
+    fontFamily: 'Open Sans',
+    textAlign: 'center',
   },
   caption: {
-    fontSize: 15,
-    color: '#FFFFFF', // Change text color to white
+    fontSize: 16,
+    color: '#FFFFFF',
     marginBottom: 10,
-    fontWeight: '100', // Ensure the caption text is thin
-    fontFamily: 'Open Sans', // Ensure Open Sans font is used
-    textAlign: 'center', // Center align the text
+    fontWeight: '400',
+    fontFamily: 'Open Sans',
+    textAlign: 'center',
   },
   typeColorText: {
     fontSize: 14,
-    color: '#FFFFFF', // Change text color to white
-    fontFamily: 'Open Sans', // Ensure Open Sans font is used
-    textAlign: 'center', // Center align the text
+    color: '#FFFFFF',
+    fontFamily: 'Open Sans',
+    textAlign: 'center',
+    marginTop: 5,
   },
 });
 
