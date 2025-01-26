@@ -1,18 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 interface SmallCardProps {
   title: string;
   caption: string;
   imageUrl: string;
+  type: 'pants' | 't-shirt' | 'hoodies' | 'longsleeves' | 'outerwear' | 'polos' | 'shirts' | 'shorts';
+  color: string;
 }
 
-const SmallCard: React.FC<SmallCardProps> = ({ title, caption, imageUrl }) => {
+const SmallCard: React.FC<SmallCardProps> = ({ title, caption, imageUrl, type, color }) => {
   return (
     <View style={styles.container}>
-      <View style={styles.topRectangle}>
-        <Image source={{ uri: imageUrl }} style={styles.image} />
-      </View>
+      {type === 'pants' ? (
+        <View style={styles.pantRectangle}>
+              <Image style={{height: 150, width: 200, alignItems:'center'}} source={require('../assets/images/pants.png')} tintColor={color} />
+        </View>
+      ) : (
+        <View style={[styles.topRectangle, { backgroundColor: color }]}>
+          <Image source={{ uri: imageUrl }} style={styles.image} />
+        </View>
+      )}
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.caption}>{caption}</Text>
     </View>
@@ -22,20 +31,23 @@ const SmallCard: React.FC<SmallCardProps> = ({ title, caption, imageUrl }) => {
 const styles = StyleSheet.create({
   container: {
     paddingEnd: 10,
+    paddingBottom: 5, // Reduced bottom padding
     marginVertical: 0,
     alignItems: 'center',
   },
   topRectangle: {
     width: 170,
     height: 170,
-    backgroundColor: '#5d7b95ff',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    marginTop: 4,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pantRectangle: {
+    width: 170,
+    height: 170,
+    borderRadius: 10,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -57,6 +69,14 @@ const styles = StyleSheet.create({
     marginTop: 2,
     color: '#666',
     fontWeight: 'thin',
+    textAlign: 'left',
+    width: 170,
+  },
+  type: {
+    fontSize: 13,
+    marginTop: 2,
+    color: '#666',
+    fontWeight: 'bold',
     textAlign: 'left',
     width: 170,
   },
