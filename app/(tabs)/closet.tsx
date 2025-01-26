@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback, RefreshControl, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import BigCard from '../../components/BigCard';
 import SmallCard from '../../components/SmallCard';
@@ -51,9 +51,16 @@ export default function HomeScreen() {
   const auth = getAuth();
   const router = useRouter();
 
+  
   const fetchData = async () => {
     const user = auth.currentUser;
     if (user) {
+      const userDocRef = doc(db, `users/${user.uid}`);
+      const userDoc = await getDoc(userDocRef);
+      const userData = userDoc.data();
+      const firstName = userData ? userData.firstName : 'User';
+          setFirstName(firstName); // Set the user's first name in state
+          console.log(`User's first name: ${firstName}`);
       const pantsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Pants"));
       const pantsSnapshot = await getDocs(pantsQuery);
 

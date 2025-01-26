@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
   card: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#D3D3D3", // Change background color to light gray
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
