@@ -25,10 +25,16 @@ const typeToImageMap: { [key: string]: any } = {
 const BigCard: React.FC<BigCardProps> = ({ title, caption, details, type1, color1, type2, color2 }) => {
   return (
     <View style={styles.container}>
-      {/* Top Rectangle with Image */}
+      {/* Top Rectangle with Images */}
       <View style={styles.topRectangle}>
-      <Image source={typeToImageMap[type2.toLowerCase()]} style={styles.image} tintColor={color2}/>
-        <Image source={typeToImageMap[type1.toLowerCase()]} style={styles.image} tintColor={color1}/>
+        <Image
+          source={typeToImageMap[type2.toLowerCase()]}
+          style={[styles.image, { tintColor: color2 }]}
+        />
+        <Image
+          source={typeToImageMap[type1.toLowerCase()]}
+          style={[styles.image, { tintColor: color1 }]}
+        />
       </View>
 
       {/* Text Content */}
@@ -45,34 +51,37 @@ const BigCard: React.FC<BigCardProps> = ({ title, caption, details, type1, color
 const styles = StyleSheet.create({
   container: {
     marginVertical: 10,
+    marginHorizontal: 15,
     width: 300,
     borderRadius: 10,
-    overflow: 'hidden', // Ensure content stays within rounded corners
-    backgroundColor: '#355c7dff', // Background color for the card
-    elevation: 5, // Add shadow for Android
-    shadowColor: '#000', // Add shadow for iOS
+    overflow: 'hidden',
+    backgroundColor: '#355c7dff',
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
   },
   topRectangle: {
     height: 230,
-    backgroundColor: '#5d7b95ff', // Background color of the top rectangle
-    justifyContent: 'center', // Center image vertically
-    alignItems: 'center', // Center image horizontally
-    paddingTop: 10,
-    paddingBottom: 10,
+    backgroundColor: '#5d7b95ff',
+    justifyContent: 'space-around', // Distribute space between images
+    alignItems: 'center',
+    flexDirection: 'row', // Arrange images horizontally
+    paddingHorizontal: 10,
+    paddingVertical: 10,
   },
   bottomRectangle: {
     paddingVertical: 15,
     paddingHorizontal: 10,
-    alignItems: 'center', // Center text horizontally
-    justifyContent: 'center', // Center text vertically
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
-    width: '80%', // Adjust image width relative to the card
-    height: '80%', // Adjust image height relative to the card
-    resizeMode: 'contain', // Ensure the image fits within its container without distortion
+    width: '40%', // Adjust width relative to the card
+    height: '80%', // Adjust height relative to the top rectangle
+    resizeMode: 'contain', // Ensure the image fits without distortion
+    marginHorizontal: 5, // Add spacing between images
   },
   title: {
     fontSize: 18,
