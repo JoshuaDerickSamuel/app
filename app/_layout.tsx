@@ -61,6 +61,15 @@ export default function RootLayout() {
             animation: "default",
           }}
         />
+          <Stack.Screen
+            name="(camera)"
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+              presentation: "card",
+              animation: "default",
+            }}
+          />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

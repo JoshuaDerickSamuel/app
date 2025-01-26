@@ -9,7 +9,7 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import Home from "../(tabs)/home";
-import Add from "../(components)/add";
+import Add from "../(camera)/add";
 
 const Stack = createStackNavigator();
 
