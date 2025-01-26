@@ -1,9 +1,13 @@
 import { Link } from "expo-router";
 import React from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+
+
 
 export default function HomeScreen() {
   return (
@@ -14,8 +18,8 @@ export default function HomeScreen() {
       </ThemedText>
 
       <Link href="/(components)/add">
-              <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
-            </Link>
+        <ThemedText type="link" style={styles.buttonText}>Add Clothes</ThemedText>
+      </Link>
     </ThemedView>
   );
 }
@@ -37,17 +41,13 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 30,
   },
-  button: {
-    width: "50%",
-  },
-  buttonContainer: {
-    // backgroundColor: "#0a7ea4",
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
+  modelContainer: {
+    width: 300,
+    height: 300,
+    backgroundColor: "#eee",
+    marginBottom: 30,
   },
   buttonText: {
-    // color: "#fff",
     fontSize: 16,
     fontWeight: "600",
   },
