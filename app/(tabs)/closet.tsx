@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Platform, StatusBar, ScrollView, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebaseConfig';
 import BigCard from '../../components/BigCard';
 import SmallCard from '../../components/SmallCard';
 import OutfitDetail from '../(components)/outfitDetail'; // Import OutfitDetail
 import ClothesDetail from '../(components)/clothesDetail'; // Import ClothesDetail
-import { getAuth} from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
+
 type Outfit = {
   id: string;
   title: string;
@@ -31,20 +32,58 @@ export default function HomeScreen() {
   const [selectedOutfit, setSelectedOutfit] = useState<Outfit | null>(null);
   const [selectedClothingItem, setSelectedClothingItem] = useState<ClothingItem | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [outfits, setOutfits] = useState<Outfit[]>([]);       
-  const [clothes, setClothes] = useState<ClothingItem[]>([]);
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [pants, setPants] = useState<ClothingItem[]>([]);
+  const [tShirts, setTShirts] = useState<ClothingItem[]>([]);
+  const [hoodies, setHoodies] = useState<ClothingItem[]>([]);
+  const [longSleeves, setLongSleeves] = useState<ClothingItem[]>([]);
+  const [outwear, setOutwear] = useState<ClothingItem[]>([]);
+  const [polos, setPolos] = useState<ClothingItem[]>([]);
+  const [shirts, setShirts] = useState<ClothingItem[]>([]);
+  const [shorts, setShorts] = useState<ClothingItem[]>([]);
   const auth = getAuth();
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-      // const outfitsSnapshot = await getDocs(collection(db, 'outfits'));
       const user = auth.currentUser;
       if (user) {
-      const clothesSnapshot = await getDocs(collection(db, `users/${user.uid}/clothes`));
-      console.log(clothesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
-      // setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
-      setClothes(clothesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        const pantsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Pants"));
+        const pantsSnapshot = await getDocs(pantsQuery);
+        
+        const tShirtsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "T-Shirt"));
+        const tShirtsSnapshot = await getDocs(tShirtsQuery);
+        
+        const hoodiesQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Hoodie"));
+        const hoodiesSnapshot = await getDocs(hoodiesQuery);
+        
+        const outfitsQuery = query(collection(db, `users/${user.uid}/outfits`));
+        const outfitsSnapshot = await getDocs(outfitsQuery);
+        
+        const longSleeveQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Longsleeve"));
+        const longSleeveSnapshot = await getDocs(longSleeveQuery);
+        
+        const outwearQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Outwear"));
+        const outwearSnapshot = await getDocs(outwearQuery);
+        
+        const poloQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Polo"));
+        const poloSnapshot = await getDocs(poloQuery);
+        
+        const shirtQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shirt"));
+        const shirtSnapshot = await getDocs(shirtQuery);
+        
+        const shortsQuery = query(collection(db, `users/${user.uid}/clothes`), where("type", "==", "Shorts"));
+        const shortsSnapshot = await getDocs(shortsQuery);
+        
+        setPants(pantsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setTShirts(tShirtsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setHoodies(hoodiesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setOutfits(outfitsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Outfit)));
+        setLongSleeves(longSleeveSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setOutwear(outwearSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setPolos(poloSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setShirts(shirtSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
+        setShorts(shortsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ClothingItem)));
       } else {
         console.error('User is not authenticated');
       }
@@ -66,6 +105,10 @@ export default function HomeScreen() {
     setIsModalVisible(false);
     setSelectedOutfit(null);
     setSelectedClothingItem(null);
+  };
+
+  const handleAddPress = () => {
+    router.push('/add');
   };
 
   return (
@@ -93,8 +136,13 @@ export default function HomeScreen() {
               <BigCard title={outfit.title} caption={outfit.caption} details={outfit.details} />
             </TouchableOpacity>
           ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
         </ScrollView>
-        <Text style={styles.subHeaderText}>Clothes</Text>
+        <Text style={styles.subHeaderText}>Pants</Text>
         <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false} 
@@ -102,11 +150,149 @@ export default function HomeScreen() {
           snapToInterval={179} 
           decelerationRate="fast"
         >
-          {clothes.map((item, index) => (
+          {pants.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
               <SmallCard title={item.title} caption={item.caption} />
             </TouchableOpacity>
           ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>T-Shirts</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {tShirts.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Hoodies</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {hoodies.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Long Sleeves</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {longSleeves.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Outwear</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {outwear.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Polos</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {polos.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Shirts</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {shirts.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+        <Text style={styles.subHeaderText}>Shorts</Text>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false} 
+          style={styles.scrollContainer}
+          snapToInterval={179} 
+          decelerationRate="fast"
+        >
+          {shorts.map((item, index) => (
+            <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
+              <SmallCard title={item.title} caption={item.caption} />
+            </TouchableOpacity>
+          ))}
+          <TouchableOpacity onPress={handleAddPress}>
+            <View style={styles.addCard}>
+              <MaterialIcons name="add" size={24} color="#333333" />
+            </View>
+          </TouchableOpacity>
         </ScrollView>
         <View style={styles.spacer} />
       </ScrollView>
@@ -224,5 +410,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '80%',
+  },
+  addCard: {
+    width: 179,
+    height: 179,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F8F8FF',
+    borderWidth: 1,
+    borderColor: '#333333',
+    borderRadius: 10,
+    marginHorizontal: 10,
   },
 });
