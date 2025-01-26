@@ -26,6 +26,7 @@ type ClothingItem = {
   color: string;
   isColdWeather: boolean;
   imageUrl: string; // Add imageUrl property
+  type: string; // Add type property
 };
 
 export default function HomeScreen() {
@@ -160,7 +161,7 @@ export default function HomeScreen() {
         >
           {pants.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="pants" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -179,7 +180,7 @@ export default function HomeScreen() {
         >
           {tShirts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="t-shirt" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -198,7 +199,7 @@ export default function HomeScreen() {
         >
           {hoodies.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="hoodies" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -217,7 +218,7 @@ export default function HomeScreen() {
         >
           {longSleeves.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="longsleeves" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -236,7 +237,7 @@ export default function HomeScreen() {
         >
           {outwear.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="outerwear" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -255,7 +256,7 @@ export default function HomeScreen() {
         >
           {polos.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="polos" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -274,7 +275,7 @@ export default function HomeScreen() {
         >
           {shirts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="shirts" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -293,7 +294,7 @@ export default function HomeScreen() {
         >
           {shorts.map((item, index) => (
             <TouchableOpacity key={index} onPress={() => handleCardPress(item)}>
-              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} />
+              <SmallCard title={item.title} caption={item.caption} imageUrl={item.imageUrl} type="shorts" color={item.color} />
             </TouchableOpacity>
           ))}
           <TouchableOpacity onPress={handleAddPress}>
@@ -420,9 +421,6 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
   },
   addCard: {
-    paddingEnd: 10,
-    paddingBottom: 5, // Reduced bottom padding
-    marginVertical: 0,
     alignItems: 'center',
     width: 170,
     height: 170,
