@@ -1,8 +1,12 @@
 import React, { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View, Alert, Modal, Image } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { storage } from '../../firebaseConfig';
+import { useState, useRef } from 'react';
+import { Button, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { storage, app } from '../../firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -11,6 +15,8 @@ export default function App() {
   const [uploading, setUploading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const cameraRef = useRef<CameraView>(null);
+  const auth = getAuth();
+  const db = getFirestore(app);
 
   if (!permission) {
     return <View />;
@@ -53,9 +59,20 @@ export default function App() {
         console.log('Download URL:', downloadURL);
   
         await sendToServer(downloadURL);
-        console.log('Photo sent to server');
+        // Send the image to your server using the download URL
+        const serverResponse = await sendToServer(downloadURL);
+
+        // Add a new document to Cloud Firestore
+        const user = auth.currentUser;
+        if (user) {
+          await addDoc(collection(db, `users/${user.uid}/clothes`), {
+            color: 'red', // Replace with actual color detection logic
+            type: serverResponse.label, // Use the type from the server response
+            img_ref: downloadURL,
+          });
+          console.log('Document added to Firestore');
         } else {
-          throw new Error('Photo URI is null');
+          console.error('No authenticated user found');
         }
       } catch (error) {
         console.error('Error uploading photo:', error);
@@ -86,6 +103,33 @@ export default function App() {
         console.error('Error sending to server:', error);
         Alert.alert('Error', 'Failed to send the image to the server.');
       }
+  }
+
+  async function sendToServer(downloadURL: string) {
+    try {
+      const formData = new FormData();
+      // Bypass TypeScript error by casting to 'any'
+      formData.append('file', {
+        uri: downloadURL,
+        type: 'image/jpeg', // Adjust MIME type if needed
+        name: 'photo.jpg',
+      } as any);  // Typecasting to 'any' to bypass TypeScript error
+
+      const response = await fetch('http://10.244.113.222:8080/predict', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const result = await response.json();
+      Alert.alert('Server Response', JSON.stringify(result));
+      return result;
+    } catch (error) {
+      console.error('Error sending to server:', error);
+      Alert.alert('Error', 'Failed to send the image to the server.');
+      throw error;
     }
 
   return (
