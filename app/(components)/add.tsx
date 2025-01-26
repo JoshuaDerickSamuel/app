@@ -42,6 +42,7 @@ export default function App() {
 
   async function uploadPhoto() {
       try {
+        if (photoUri) {
         const response = await fetch(photoUri);
         const blob = await response.blob();
         const storageRef = ref(storage, `photos/${Date.now()}.jpg`);
@@ -53,6 +54,9 @@ export default function App() {
   
         await sendToServer(downloadURL);
         console.log('Photo sent to server');
+        } else {
+          throw new Error('Photo URI is null');
+        }
       } catch (error) {
         console.error('Error uploading photo:', error);
         Alert.alert('Error', 'Failed to upload the photo.');
